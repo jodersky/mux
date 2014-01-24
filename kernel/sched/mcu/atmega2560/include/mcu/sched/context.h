@@ -3,6 +3,12 @@
 
 #include <avr/interrupt.h>
 
+/* 
+ * The macros SAVE_CONTEXT(), RESTORE_CONTEXT() as well as the code contained in 
+ * init_stack is adapted from the FreeRTOS kernel (http://www.freertos.org/).
+ * Here by copyright, credits attributed to wherever they belong.
+ */
+
 #define SAVE_CONTEXT() \
   asm volatile ( \
     "push r0 \n\t" \
