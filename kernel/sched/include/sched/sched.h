@@ -36,7 +36,7 @@ struct tcb_t {
  * Note: for a task to be scheduled, it must first be spawned (see spawn()).
 */
 #define DECLARE_TASK(name, stack_size, entry_function) \
-  static char volatile declared_stack_##name[stack_size]; \
+  static char declared_stack_##name[stack_size]; \
   static struct tcb_t name = { \
     .sp = 0, \
     .mem_low = declared_stack_##name, \
@@ -86,17 +86,17 @@ static inline void wake_all(struct list_head* queue) {
  */
 void sched_init();
 
+/** 
+ * Enters the scheduler, setting current to the next runnable task.
+ */
+void schedule();
+
 /**
  * Ticks the scheduler.
  */
 inline void sched_tick() {
   schedule(); //in a round-robin scheduler, scheduling is called after every tick
 }
-
-/** 
- * Enters the scheduler, setting current to the next runnable task.
- */
-void schedule();
 
 /**
  * Initializes a given task and adds it to the ready queue.

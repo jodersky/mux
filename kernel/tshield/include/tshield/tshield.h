@@ -32,7 +32,8 @@
  * 
  */
 
- #define TSHIELD_LED_IDLE 0
+#define DEBUG_LEDS 4
+#define DEBUG_LED_IDLE 0
  
 void tshield_init();
 

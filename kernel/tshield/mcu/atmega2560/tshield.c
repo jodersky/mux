@@ -23,7 +23,6 @@ void tshield_init() {
   PORTB &= ~(1 << 6);
 
   tshield_init_servo();
-  
 }
 
 #define WAIT_VALUE 20000
@@ -112,4 +111,28 @@ void tshield_servo(unsigned char angle) {
   unsigned long k = (unsigned long) angle;
   unsigned long counter = (450 * k) / 255 + 150;
   OCR1A = (unsigned int) counter;
+}
+
+void debug_led(int led, int value) {
+  tshield_led(led, value);
+}
+
+static inline void _wait() {
+  for (volatile long i = 0; i < 20000; ++i) {};
+}
+
+void panic() {
+  cli();
+  while(1) {
+    for(int i = 0; i < DEBUG_LEDS; ++i) {
+      debug_led((i - 1) % DEBUG_LEDS, 0);
+      debug_led(i, 1);
+      _wait();
+    }
+    for(int i = DEBUG_LEDS - 1; i >= 0; --i) {
+      debug_led((i + 1) % DEBUG_LEDS, 0);
+      debug_led(i, 1);
+      _wait();
+    }
+  }
 }

@@ -3,17 +3,18 @@
 #include <time/timer.h>
 #include <bug/panic.h>
 #include <bug/debug.h>
+#include <tshield/tshield.h>
 
 #define WAIT_CYCLES(cycles) for (volatile unsigned long i = 0; i < cycles; ++i) {}
 
 void blink( char id) {
   while(1) {
     debug_led(id,1);
-    //yield();
-    WAIT_CYCLES(20000);
+    yield();
+    WAIT_CYCLES(5000);
     debug_led(id,0);
-    //yield();
-    WAIT_CYCLES(20000);
+    yield();
+    WAIT_CYCLES(5000);
   }
 }
 

@@ -6,7 +6,6 @@
 
 void idle_entry(char args) {
   while(1) {
-    tshield_led(TSHIELD_LED_IDLE,1);
     set_sleep_mode(SLEEP_MODE_IDLE);
     cli();
     sleep_enable();

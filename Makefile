@@ -83,11 +83,11 @@ kernel/%.o: kernel/%.c
 	
 
 # Utility rules
-upload: target
-	$(AVRDUDE) $(AVRDUDEFLAGS) -U flash:w:$(TARGET).hex:i
-	
 size: target
 	$(AVRSIZE) --format=avr --mcu=$(MCU) $(TARGET).elf
+
+upload: target
+	$(AVRDUDE) $(AVRDUDEFLAGS) -U flash:w:$(TARGET).hex:i
 	
 monitor:
 	cu -l $(SERIAL) -s $(BAUD) --parity=none -h

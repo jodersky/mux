@@ -4,7 +4,6 @@ char* init_stack(const char* const mem_low, const char* const mem_high, void (*e
   char* sp = (char*) mem_high;
   unsigned long address = (unsigned long) entry;
   
-  
   *sp = (char) 0x1;
   sp--;
   *sp = (char) 0x2;

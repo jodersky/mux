@@ -37,11 +37,11 @@ void spawn(struct tcb_t* const tcb, char args) {
   list_add_tail(&tcb->q, &ready);
 }
 
-void yield(void) {
+void yield() {
   SAVE_CONTEXT();
   schedule();
   RESTORE_CONTEXT();
-  asm volatile ( "ret" );
+  RETURN();
 }
 
 void freeze() {
