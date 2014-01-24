@@ -1,7 +1,7 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#define HZ 100
+#define HZ 10
 
 void timer_init();
 void timer_start();

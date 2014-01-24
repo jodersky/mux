@@ -10,11 +10,11 @@
 void blink( char id) {
   while(1) {
     debug_led(id,1);
-    yield();
-    WAIT_CYCLES(5000);
+    //yield();
+    WAIT_CYCLES(50000);
     debug_led(id,0);
-    yield();
-    WAIT_CYCLES(5000);
+    //yield();
+    WAIT_CYCLES(50000);
   }
 }
 
