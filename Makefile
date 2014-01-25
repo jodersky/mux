@@ -15,7 +15,7 @@ BAUD=115200
 CC=avr-gcc
 CFLAGS= -std=gnu99 -O2 -Wall -finline-functions -ffunction-sections -fdata-sections -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -mmcu=$(MCU) -DF_CPU=$(F_CPU)
 LD=avr-gcc
-LDFLAGS= -O2 -Wl,--gc-sections,--relax -mmcu=$(MCU)
+LDFLAGS= -Wl,--gc-sections,--relax -mmcu=$(MCU)
 AR=avr-ar
 AS=avr-as
 ASFLAGS=-mmcu=$(MCU)
@@ -28,7 +28,7 @@ CPP=avr-g++
 CPPFLAGS= -O2 -Wall -fno-exceptions -ffunction-sections -fdata-sections -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -mmcu=$(MCU) -DF_CPU=$(F_CPU)
 GDBINITFILE=gdb.conf
 
-MODULES=collection sched time tshield serial bug
+MODULES=collection sched time tshield bug serial
 
 SOURCES=\
 	$(foreach module,$(MODULES),$(wildcard kernel/$(module)/*.S)) \

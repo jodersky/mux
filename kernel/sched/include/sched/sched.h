@@ -5,7 +5,7 @@
 #include "mcu/sched/context.h"
 
 /** Proposed default stack size, you may use this definition for declaring tasks. */
-#define STACK_SIZE 64
+#define STACK_SIZE 256
 
 /** Stack size to be allocated for the idle task. */
 #define IDLE_STACK_SIZE 64
@@ -66,7 +66,6 @@ extern struct list_head ready;
  * calls made after SAVE_CONTEXT().
  */
 extern char* volatile kstack;
-
 
 /** 
  * Makes the current task sleep on a specific queue.

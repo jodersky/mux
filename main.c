@@ -5,6 +5,7 @@
 #include <bug/debug.h>
 #include <tshield/tshield.h>
 #include <collection/list.h>
+#include <serial/serial.h>
 
 #define WAIT_CYCLES(cycles) for (volatile unsigned long i = 0; i < cycles; ++i) {}
 
@@ -40,10 +41,13 @@ void blink( char id) {
   }
 }
 
+#define READ_BUFFER_SIZE 24
 void read(char id) {
-  sleep(5000);
+  serial_init(115200);
+  char data[READ_BUFFER_SIZE];
   while(1) {
-    
+    size_t length = serial_read(data, READ_BUFFER_SIZE);
+    serial_write(data, length);
   }
 }
 
