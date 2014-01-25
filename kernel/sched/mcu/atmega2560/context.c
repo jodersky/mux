@@ -4,6 +4,7 @@ char* init_stack(const char* const mem_low, const char* const mem_high, void (*e
   char* sp = (char*) mem_high;
   unsigned long address = (unsigned long) entry;
   
+  // pattern for debugging purposes
   *sp = (char) 0x1;
   sp--;
   *sp = (char) 0x2;
@@ -13,6 +14,7 @@ char* init_stack(const char* const mem_low, const char* const mem_high, void (*e
   *sp = (char) 0x2;
   sp--;
   
+  // put return address on stack
 	*sp = (char) ( address & (unsigned short) 0x00ff );
 	sp--;
 
@@ -22,6 +24,7 @@ char* init_stack(const char* const mem_low, const char* const mem_high, void (*e
   *sp = (char) ( (address >> 16) & ( unsigned short ) 0x00ff );
 	sp--;
 
+  // save registers
 	*sp = (char) 0x00; //r0
 	sp--;
 	*sp = (char) 0x80; //SREG, enable interrupts when task starts

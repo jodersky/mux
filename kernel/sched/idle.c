@@ -6,12 +6,12 @@
 
 void idle_entry(char args) {
   while(1) {
-    set_sleep_mode(SLEEP_MODE_IDLE);
-    cli();
-    sleep_enable();
-    sei();
-    sleep_cpu();
-    sleep_disable();
+    //set_sleep_mode(SLEEP_MODE_IDLE);
+    //cli();
+    //sleep_enable();
+    //sei();
+    //sleep_cpu();
+    //sleep_disable();
   };
 }
 

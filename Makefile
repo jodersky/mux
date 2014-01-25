@@ -92,6 +92,12 @@ upload: target
 monitor:
 	cu -l $(SERIAL) -s $(BAUD) --parity=none -h
 
+cycle:
+	@make clean && \
+	make > /dev/null && \
+	read -p "Press enter to proceed with upload..." nothing && \
+	make upload
+
 clean:
 	@rm -f *.o
 	@for module in $(MODULES); do \
@@ -122,4 +128,4 @@ $(GDBINITFILE): $(TARGET).elf
 	@echo "Use 'avr-gdb -x $(GDBINITFILE)'"
 
 	
-.PHONY: clean arduino
+.PHONY: clean cycle

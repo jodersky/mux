@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include "tshield/tshield.h"
 
 static void tshield_init_servo();

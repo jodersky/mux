@@ -14,8 +14,8 @@ static void init_idle() {
 }
 
 void sched_init() {
-  init_kstack((char **) &kstack);
   init_idle();
+  init_kstack((char **) &kstack);
   schedule();
   sei();
   RESTORE_CONTEXT();
@@ -25,9 +25,16 @@ void sched_init() {
 void schedule() {
   if(!list_empty(&ready)) {
     current = list_entry(ready.next, struct tcb_t, q);
-    list_move_tail(&current->q, &ready);
+    list_move_tail(ready.next, &ready);
   } else {
     current = &idle;
+  }
+}
+
+void wake_all(struct list_head* queue) {
+  list_splice_init(queue, ready.prev);
+  if (current == &idle) {
+    schedule();
   }
 }
 
@@ -37,18 +44,11 @@ void spawn(struct tcb_t* const tcb, char args) {
   list_add_tail(&tcb->q, &ready);
 }
 
-void yield() {
+void yield(void) {
+  cli();
   SAVE_CONTEXT();
   schedule();
   RESTORE_CONTEXT();
+  sei();
   RETURN();
 }
-
-void freeze() {
-  SAVE_CONTEXT();
-  list_del_init(&current->q);
-  schedule();
-  RESTORE_CONTEXT();
-  asm volatile ( "ret" );
-}
-

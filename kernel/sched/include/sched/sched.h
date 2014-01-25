@@ -76,9 +76,7 @@ static inline void sleep_on(struct list_head* queue) {
  * Wakes all tasks waiting in the given queue.
  * This moves all tasks contained in the queue to the ready queue.
  */
-static inline void wake_all(struct list_head* queue) {
-  list_splice_init(queue, ready.prev);
-}
+void wake_all(struct list_head* queue);
 
 /**
  * Initializes the scheduler by setting up kstack, initializing the idle task
@@ -107,9 +105,6 @@ void spawn(struct tcb_t* const tcb, char args);
  * Voluntarily yields control of the CPU to the scheduler.
  */
 void yield() __attribute__ ( ( naked ) );
-
-void freeze() __attribute__ ( ( naked ) );
-
 
 #define ENTER_CRITICAL() cli()
 #define EXIT_CRITICAL() sei()
