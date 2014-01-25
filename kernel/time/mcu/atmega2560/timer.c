@@ -11,7 +11,7 @@ void timer_init() {
   TCCR3B = (1 << WGM32); // turn on CTC mode:
   TCCR3B |= (1 << CS32) | (0 << CS31) | (1 << CS30); // set to 1024 prescaler
 
-  unsigned long int hz_counter = ((unsigned long int) F_CPU) / (2 * 1024 * ((unsigned long int) HZ)) - 1;
+  unsigned long int hz_counter = ((unsigned long int) F_CPU) / (1024 * ((unsigned long int) HZ)) - 1;
   OCR3A = hz_counter;
   sei();
 }
@@ -42,6 +42,5 @@ ISR(TIMER3_COMPA_vect, ISR_NAKED) {
   led13(on);
   sched_tick();
   RESTORE_CONTEXT();
-  sei();
   asm volatile ("reti");
 }

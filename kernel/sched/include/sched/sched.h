@@ -29,6 +29,9 @@ struct tcb_t {
 
   /** Current wait queue that this task is in. */
   struct list_head q;
+
+  long sleep_left;
+
 };
 
 /**
@@ -42,7 +45,8 @@ struct tcb_t {
     .mem_low = declared_stack_##name, \
     .mem_high = declared_stack_##name + stack_size - 1, \
     .entry = entry_function, \
-    .q = {} \
+    .q = {}, \
+    .sleep_left = 0 \
   };
 
 /**
@@ -92,9 +96,7 @@ void schedule();
 /**
  * Ticks the scheduler.
  */
-inline void sched_tick() {
-  schedule(); //in a round-robin scheduler, scheduling is called after every tick
-}
+void sched_tick();
 
 /**
  * Initializes a given task and adds it to the ready queue.
@@ -105,6 +107,8 @@ void spawn(struct tcb_t* const tcb, char args);
  * Voluntarily yields control of the CPU to the scheduler.
  */
 void yield() __attribute__ ( ( naked ) );
+
+void sleep(long ms) __attribute__ ( ( naked) );
 
 #define ENTER_CRITICAL() cli()
 #define EXIT_CRITICAL() sei()

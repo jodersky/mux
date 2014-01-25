@@ -34,31 +34,16 @@ void wake() {
 void blink( char id) {
   while(1) {
     debug_led(id,1);
-    //yield();
-    WAIT_CYCLES(5000);
+    sleep(500);
     debug_led(id,0);
-    //yield();
-    WAIT_CYCLES(5000);
-    freeze();
+    sleep(500);
   }
 }
 
 void read(char id) {
+  sleep(5000);
   while(1) {
-    debug_led(0, 0);
-    debug_led(3, 0);
-    unsigned char buttons = tshield_read();
-    if (buttons != 0) {
-      wake();
-      debug_led(0, 1);
-      unsigned int counter = 0;
-      if (counter > 0) {
-        debug_led(3, 1);
-      }
-      if (list_empty(&frozen)) {
-        debug_led(3, 1);
-      }
-    }
+    
   }
 }
 
