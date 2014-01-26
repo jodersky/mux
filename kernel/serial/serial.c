@@ -3,6 +3,9 @@
 #include "sched/sched.h"
 #include "bug/debug.h"
 
+ FILE serial_out = FDEV_SETUP_STREAM(serial_putc, NULL, _FDEV_SETUP_WRITE);
+ FILE serial_in = FDEV_SETUP_STREAM(NULL, serial_getc, _FDEV_SETUP_READ);
+
 static struct serial_device_t serial = SERIAL_DEVICE_INIT(serial);
 
 void serial_init(unsigned long baud) {
@@ -14,15 +17,8 @@ void serial_init(unsigned long baud) {
   UCSR0B &= ~(1 << UDRIE0);
 }
 
-static inline int rbuffer_empty_safe(struct rbuffer_t* const rb) {
-  cli();
-  int r = rbuffer_empty(rb);
-  sei();
-  return r;
-}
-
 size_t serial_read(char* const data, size_t size) {
- while (rbuffer_empty_safe(&serial.rx_buffer)) {
+ while (rbuffer_empty(&serial.rx_buffer)) {
     cli();
     sleep_on(&serial.rx_q);
     yield();
@@ -33,6 +29,39 @@ size_t serial_read(char* const data, size_t size) {
   return r;
 }
 
+size_t serial_write(const char* const data, size_t size) {
+  cli();
+  size_t r = rbuffer_write(&serial.tx_buffer, data, size);
+  sei();
+  UCSR0B |= (1 << UDRIE0);
+  return r;
+}
+
+int serial_getc() {
+  while (rbuffer_empty(&serial.rx_buffer)) {
+    cli();
+    sleep_on(&serial.rx_q);
+    yield();
+  }
+  cli();
+  char c = 0;
+  size_t r = rbuffer_read_char(&serial.rx_buffer, &c);
+  sei();
+  if (r) return (int) c;
+  else return EOF;
+}
+
+int serial_putc(char c) {
+  if (c == '\n') serial_putc('\r');
+  int r = 0;
+  do {
+    cli();
+    r = rbuffer_write_char(&serial.tx_buffer, c);
+    sei();
+    UCSR0B |= (1 << UDRIE0);
+  } while (r != 1);
+  return c;
+}
 
 //called when byte is received
 ISR(USART0_RX_vect, ISR_NAKED) {
@@ -44,15 +73,6 @@ ISR(USART0_RX_vect, ISR_NAKED) {
   asm volatile ("reti");
 }
 
-
-size_t serial_write(const char* const data, size_t size) {
-  cli();
-  size_t r = rbuffer_write(&serial.tx_buffer, data, size);
-  sei();
-  UCSR0B |= (1 << UDRIE0);
-  return r;
-}
-
 //called when data register is empty
 ISR(USART0_UDRE_vect) {
   char c;
@@ -62,6 +82,7 @@ ISR(USART0_UDRE_vect) {
     UCSR0B &= ~(1 << UDRIE0); //buffer empty, disable interruot
   }
 }
+
 /*
 void serial_read() {
   ENTER_CRITICAL();

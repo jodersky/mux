@@ -2,6 +2,8 @@
 #define SERIAL_H
 
 #include <stddef.h>
+#include <stdio.h>
+
 #include "collection/rbuffer.h"
 #include "collection/list.h"
 
@@ -38,5 +40,12 @@ inline void serial_write_str(const char* const str) {
   for (length = 0; str[length] != 0; ++length){}
   serial_write(str, length);
 }
+
+int serial_getc();
+
+int serial_putc(char c);
+
+extern FILE serial_in;
+extern FILE serial_out;
 
 #endif

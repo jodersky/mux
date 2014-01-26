@@ -1,4 +1,6 @@
 #include <stddef.h>
+#include <stdio.h>
+#include <avr/pgmspace.h>
 #include <sched/sched.h>
 #include <time/timer.h>
 #include <bug/panic.h>
@@ -6,6 +8,7 @@
 #include <tshield/tshield.h>
 #include <collection/list.h>
 #include <serial/serial.h>
+#include "shell.h"
 
 #define WAIT_CYCLES(cycles) for (volatile unsigned long i = 0; i < cycles; ++i) {}
 
@@ -35,20 +38,20 @@ void wake() {
 void blink( char id) {
   while(1) {
     debug_led(id,1);
-    sleep(500);
+    sleep(id * 300);
     debug_led(id,0);
-    sleep(500);
+    sleep(id * 300);
   }
 }
 
-#define READ_BUFFER_SIZE 24
+
+
+#define READ_BUFFER_SIZE 64
 void read(char id) {
   serial_init(115200);
-  char data[READ_BUFFER_SIZE];
-  while(1) {
-    size_t length = serial_read(data, READ_BUFFER_SIZE);
-    serial_write(data, length);
-  }
+  stdout = &serial_out;
+  stdin = &serial_in;
+  shell();
 }
 
 DECLARE_TASK(task1, STACK_SIZE, blink);

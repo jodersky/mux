@@ -95,6 +95,7 @@ monitor:
 cycle:
 	@make clean && \
 	make > /dev/null && \
+	make size && \
 	read -p "Press enter to proceed with upload..." nothing && \
 	make upload
 
