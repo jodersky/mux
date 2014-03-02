@@ -11,6 +11,9 @@ TARGET=firmware
 SERIAL=/dev/ttyACM0
 BAUD=115200
 
+# Modules to include in kernel
+MODULES=collection sched time tshield bug serial
+
 # Toolchain flags
 CC=avr-gcc
 CFLAGS= -std=gnu99 -O2 -Wall -finline-functions -ffunction-sections -fdata-sections -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -mmcu=$(MCU) -DF_CPU=$(F_CPU)
@@ -28,10 +31,8 @@ CPP=avr-g++
 CPPFLAGS= -O2 -Wall -fno-exceptions -ffunction-sections -fdata-sections -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -mmcu=$(MCU) -DF_CPU=$(F_CPU)
 GDBINITFILE=gdb.conf
 
-MODULES=collection sched time tshield bug serial
-
+# Derived variables
 SOURCES=\
-	$(foreach module,$(MODULES),$(wildcard kernel/$(module)/*.S)) \
 	$(foreach module,$(MODULES),$(wildcard kernel/$(module)/*.c)) \
 	$(foreach module,$(MODULES),$(wildcard kernel/$(module)/mcu/$(MCU)/*.S)) \
 	$(foreach module,$(MODULES),$(wildcard kernel/$(module)/mcu/$(MCU)/*.c)) \
@@ -39,12 +40,10 @@ SOURCES=\
 	$(wildcard *.s) $(wildcard *.c) $(wildcard *.cpp)
 	
 OBJECTS=$(addsuffix .o, $(basename $(SOURCES)))
+
 INCLUDES=\
 	$(foreach module, $(MODULES), kernel/$(module)/include) \
 	$(foreach module, $(MODULES), kernel/$(module)/mcu/$(MCU)/include)
-
-ARDUINO_INCLUDES=arduino arduino/variants/mega
-
 
 # Rules
 all: target
@@ -57,13 +56,6 @@ $(TARGET).hex: $(TARGET).elf
 $(TARGET).elf: $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $^
 	
-# Arduino sources need special includes
-arduino/%.o: arduino/%.c
-	$(CC) $(CFLAGS) $(addprefix -I, $(ARDUINO_INCLUDES)) $(addprefix -I, $(INCLUDES)) -o $@ -c $<
-	
-arduino/%.o: arduino/%.cpp
-	$(CPP) $(CPPFLAGS) $(addprefix -I, $(ARDUINO_INCLUDES)) $(addprefix -I, $(INCLUDES)) -o $@ -c $<
-	
 # Kernel sources
 kernel/%.o: kernel/%.S
 	$(CC) $(CFLAGS) -o $@ -c $<
@@ -73,13 +65,13 @@ kernel/%.o: kernel/%.c
 	
 # Local sources may use arduino and therfore need special includes
 %.o: %.s
-	$(CC) $(CFLAGS) $(addprefix -I, $(ARDUINO_INCLUDES)) -I$(dir $<) $(addprefix -I, $(INCLUDES)) -o $@ -c $<
+	$(CC) $(CFLAGS) -I$(dir $<) $(addprefix -I, $(INCLUDES)) -o $@ -c $<
 	
 %.o: %.c
-	$(CC) $(CFLAGS) $(addprefix -I, $(ARDUINO_INCLUDES)) -I$(dir $<) $(addprefix -I, $(INCLUDES)) -o $@ -c $<
+	$(CC) $(CFLAGS) -I$(dir $<) $(addprefix -I, $(INCLUDES)) -o $@ -c $<
 	
 %.o: %.cpp
-	$(CPP) $(CPPFLAGS) $(addprefix -I, $(ARDUINO_INCLUDES)) -I$(dir $<) $(addprefix -I, $(INCLUDES)) -o $@ -c $<
+	$(CPP) $(CPPFLAGS) -I$(dir $<) $(addprefix -I, $(INCLUDES)) -o $@ -c $<
 	
 
 # Utility rules

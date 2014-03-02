@@ -12,7 +12,7 @@
 
 /**
  * Task control block, contains runtime
- * information of tasks.
+ * information about tasks.
  */
 struct tcb_t {
   /** Stack pointer of this task. (must be first in structure) */
