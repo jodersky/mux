@@ -2,6 +2,7 @@
 #define SCHED_H
 
 #include "collection/list.h"
+#include "task/task.h"
 #include "mcu/task/task.h"
 
 /**

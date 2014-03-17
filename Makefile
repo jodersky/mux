@@ -12,7 +12,7 @@ SERIAL=/dev/ttyACM0
 BAUD=115200
 
 # Modules to include in kernel
-MODULES=bug collection task tshield
+MODULES=bug collection task tshield time
 
 # Toolchain flags
 CC=avr-gcc

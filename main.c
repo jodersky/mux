@@ -24,13 +24,10 @@ void freeze() {
 void blink( char id) {
   while(1) {
     debug_led(id - 1,1);
-    WAIT_CYCLES((long) id * 30000);
+    WAIT_CYCLES((long) 30000);
     debug_led(id - 1,0);
-    WAIT_CYCLES((long) id * 30000);
-    freeze();
+    WAIT_CYCLES((long) 30000);
   }
-
-  panic();
 }
 
 
@@ -43,6 +40,7 @@ DECLARE_TASK(task4, DEFAULT_STACK_SIZE, blink, 4);
 int main(int argc, char *argv[]) {
   cli();
   tshield_init();
+
   
 
   spawn(&task1);
@@ -51,7 +49,11 @@ int main(int argc, char *argv[]) {
   spawn(&task4);
   
   sei();
+  clock_init(10, schedule);
+  clock_start();
   sched_init();
+
+
   panic(); //should never reach here
   while(1){}
 }
