@@ -6,54 +6,50 @@
 #include "task/sched.h"
 #include "bug/panic.h"
 #include "bug/debug.h"
+#include "task/lock.h"
+#include "time/clock.h"
 #include "mcu/task/context.h"
 #include "tshield/tshield.h"
 
 #define WAIT_CYCLES(cycles) for (volatile unsigned long i = 0; i < cycles; ++i) {}
 
-struct list_head frozen = LIST_HEAD_INIT(frozen);
+spin_lock_t on_lock = SPIN_LOCK_UNLOCKED;
+volatile char on = 0;
 
-void freeze() __attribute__ ( ( naked ) );
-void freeze() {
-  context_save();
-  sleep_queue(&frozen);
-  schedule();
-  context_restore();
+void read(char id) {
+  while(1) {
+    spin_lock(&on_lock);
+    debug_led(0,on);
+    spin_unlock(&on_lock);
+  }
 }
 
-void blink( char id) {
+void write( char id) {
   while(1) {
-    debug_led(id - 1,1);
-    WAIT_CYCLES((long) 30000);
-    debug_led(id - 1,0);
-    WAIT_CYCLES((long) 30000);
+    spin_lock(&on_lock);
+    on = !on;
+    WAIT_CYCLES(30000);
+    spin_unlock(&on_lock);
   }
 }
 
 
-DECLARE_TASK(task1, DEFAULT_STACK_SIZE, blink, 1);
-DECLARE_TASK(task2, DEFAULT_STACK_SIZE, blink, 2);
-DECLARE_TASK(task3, DEFAULT_STACK_SIZE, blink, 3);
-DECLARE_TASK(task4, DEFAULT_STACK_SIZE, blink, 4);
+DECLARE_TASK(task1, DEFAULT_STACK_SIZE, read, 1);
+DECLARE_TASK(task2, DEFAULT_STACK_SIZE, write, 2);
 
 
 int main(int argc, char *argv[]) {
   cli();
   tshield_init();
-
   
 
   spawn(&task1);
   spawn(&task2);
-  spawn(&task3);
-  spawn(&task4);
   
   sei();
   clock_init(10, schedule);
   clock_start();
   sched_init();
-
-
   panic(); //should never reach here
   while(1){}
 }

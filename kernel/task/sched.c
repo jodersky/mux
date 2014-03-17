@@ -35,7 +35,17 @@ void sched_init() {
   ret();
 }
 
+
+#include <avr/io.h>
+void toggle_led() {
+  DDRB |= (1 << 7);
+  PORTB ^= (1 << 7);
+}
+
+
+
 void schedule() {
+  toggle_led();
   if(!list_empty(&ready)) {
     current = list_entry(ready.next, struct tcb_t, queue);
     list_move_tail(ready.next, &ready);

@@ -16,7 +16,7 @@ void clock_init(int ms, void (*tick)()) {
   unsigned long int fcpu = (unsigned long int) F_CPU;
   unsigned long int hz = 1000l / ((unsigned long int) ms);
 
-  unsigned long int hz_counter = fcpu / (1024 * (hz)) - 1;
+  unsigned long int hz_counter = fcpu / (1024l * (hz)) - 1;
   OCR3A = hz_counter;
   on_tick = tick;
 }
