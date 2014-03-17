@@ -63,7 +63,7 @@ kernel/%.o: kernel/%.S
 kernel/%.o: kernel/%.c
 	$(CC) $(CFLAGS) -I$(dir $<) $(addprefix -I, $(INCLUDES)) -o $@ -c $<
 	
-# Local sources may use arduino and therfore need special includes
+# Local sources
 %.o: %.s
 	$(CC) $(CFLAGS) -I$(dir $<) $(addprefix -I, $(INCLUDES)) -o $@ -c $<
 	
@@ -72,7 +72,6 @@ kernel/%.o: kernel/%.c
 	
 %.o: %.cpp
 	$(CPP) $(CPPFLAGS) -I$(dir $<) $(addprefix -I, $(INCLUDES)) -o $@ -c $<
-	
 
 # Utility rules
 size: target
