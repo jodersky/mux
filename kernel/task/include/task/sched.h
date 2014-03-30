@@ -19,7 +19,7 @@ extern struct list_head ready;
 
 /**
  * Stack pointer for operations performed out of task context, including any
- * calls made after SAVE_CONTEXT().
+ * calls made after context save.
  */
 extern void* volatile kstack;
 

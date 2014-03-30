@@ -18,6 +18,7 @@ void shell() {
     printf ("root@arduino$ ");
 
     fgets(in, IN_LENGTH, stdin);
+    printf("got: %d\n", in[0]);
 
     argc = 0;
     char *p = strtok (in," \n\r");
