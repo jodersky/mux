@@ -17,12 +17,6 @@ extern struct tcb_t* volatile current;
  */
 extern struct list_head ready;
 
-/**
- * Stack pointer for operations performed out of task context, including any
- * calls made after context save.
- */
-extern void* volatile kstack;
-
 /** 
  * Makes the current task sleep on a specific queue.
  * This moves the current task to the given queue's tail.

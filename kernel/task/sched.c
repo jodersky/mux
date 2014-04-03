@@ -2,7 +2,6 @@
 #include "task/task.h"
 #include "task/sched.h"
 #include "mcu/task/context.h"
-#include "mcu/task/context.h"
 
 
 struct tcb_t* volatile current = 0;
@@ -10,8 +9,6 @@ struct tcb_t* volatile current = 0;
 static struct tcb_t* volatile idle = 0;
 
 struct list_head ready = LIST_HEAD_INIT(ready);
-
-void* volatile kstack;
 
 void spawn(struct tcb_t* const tcb) {
   tcb->sp = stack_init(tcb->mem_low, tcb->mem_high, tcb->entry, tcb->id);
@@ -26,31 +23,24 @@ void spawn_idle(struct tcb_t* const tcb) {
 }
 
 void yield(void) {
-  cli();
   context_save();
   schedule();
   context_restore();
-  sei();
   ret();
 }
 
-
 void sched_init() {
-  kstack_init(&kstack);
   schedule();
   context_restore();
   sei();
   ret();
 }
-
 
 #include <avr/io.h>
 void toggle_led() {
   DDRB |= (1 << 7);
   PORTB ^= (1 << 7);
 }
-
-
 
 void schedule() {
   toggle_led();

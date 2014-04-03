@@ -1,5 +1,5 @@
-#ifndef CONTEXT_H
-#define CONTEXT_H
+#ifndef MCU_CONTEXT_H
+#define MCU_CONTEXT_H
 
 #include <avr/interrupt.h>
 #define ret() asm volatile ( "ret" )
@@ -20,6 +20,7 @@
   asm volatile ( \
     "push r0 \n\t" \
     "in r0, __SREG__ \n\t" \
+    "cli \n\t" \
     "push r0 \n\t" \
     "push r1 \n\t" \
     "clr r1 \n\t" \
@@ -59,12 +60,6 @@
     "st x+, r0 	\n\t" \
     "in r0, __SP_H__ \n\t" \
     "st x+, r0 \n\t" \
-    "lds r26, kstack \n\t" \
-    "lds r27, kstack + 1 \n\t" \
-    "ld r28, x+ \n\t" \
-    "out __SP_L__, r28 \n\t" \
-    "ld r29, x+ \n\t" \
-    "out __SP_H__, r29 \n\t" \
   )
 
 
@@ -74,12 +69,6 @@
  */
 #define context_restore() \
   asm volatile ( \
-    "lds r26, kstack \n\t" \
-    "lds r27, kstack +1 \n\t" \
-    "in r0, __SP_L__ \n\t" \
-    "st x+, r0  \n\t" \
-    "in r0, __SP_H__ \n\t" \
-    "st x+, r0  \n\t" \
     "lds r26, current \n\t" \
     "lds r27, current + 1 \n\t" \
     "ld r28, x+ \n\t" \
@@ -124,14 +113,5 @@
 
 /** Initialize the given memory addresses to contain a valid, initial stackframe. */
 char* stack_init(const char* const mem_low, const char* const mem_high, void (*entry)(char), char args);
-
-/** Initialize the given memory addresses to contain a valid, initial stackframe. */
-static inline void kstack_init(void **kstack) {
-  //this sets the kernel stack to the default stack location
-  //of this mcu, namely the top (stacks of tasks will typically
-  //be contained in memory allocated on the head and thus should
-  //overflow with the kernel stack)
-  *kstack = (void*) SP; 
-}
 
 #endif

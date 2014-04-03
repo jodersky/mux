@@ -5,26 +5,26 @@ char* stack_init(const char* const mem_low, const char* const mem_high, void (*e
   unsigned long address = (unsigned long) entry;
   
   // pattern for debugging purposes
-  *sp = (char) 0x1;
-  sp--;
-  *sp = (char) 0x2;
-  sp--;
-  *sp = (char) 0x1;
-  sp--;
-  *sp = (char) 0x2;
-  sp--;
+    *sp = (char) 0x1;
+    sp--;
+    *sp = (char) 0x2;
+    sp--;
+    *sp = (char) 0x1;
+    sp--;
+    *sp = (char) 0x2;
+    sp--;
   
-  // put return address on stack
-	*sp = (char) ( address & (unsigned short) 0x00ff );
+    // put return address on stack
+    *sp = (char) ( address & (unsigned short) 0x00ff );
 	sp--;
 
 	*sp = (char) ( (address >> 8) & ( unsigned short ) 0x00ff );
 	sp--;
   
-  *sp = (char) ( (address >> 16) & ( unsigned short ) 0x00ff );
+    *sp = (char) ( (address >> 16) & ( unsigned short ) 0x00ff );
 	sp--;
 
-  // save registers
+    // save registers
 	*sp = (char) 0x00; //r0
 	sp--;
 	*sp = (char) 0x80; //SREG, enable interrupts when task starts
@@ -69,30 +69,30 @@ char* stack_init(const char* const mem_low, const char* const mem_high, void (*e
 	sp--;
 	*sp = ( char ) 0x00; //r20
 	sp--;
-  *sp = ( char ) 0x00; //r21
+    *sp = ( char ) 0x00; //r21
 	sp--;
-  *sp = ( char ) 0x00; //r22
+    *sp = ( char ) 0x00; //r22
 	sp--;
-  *sp = ( char ) 0x00; //r23
-	sp--;
-  
-  *sp = (char) ( args ); //place first argument in register 24
+    *sp = ( char ) 0x00; //r23
 	sp--;
   
-  *sp = ( char ) 0x00; //r25
-	sp--;
-  *sp = ( char ) 0x00; //r26
-	sp--;
-  *sp = ( char ) 0x00; //r27
-	sp--;
-  *sp = ( char ) 0x00; //r28
-	sp--;
-  *sp = ( char ) 0x00; //r29
-	sp--;
-  *sp = ( char ) 0x00; //r30
-	sp--;
-  *sp = ( char ) 0x00; //r31
+    *sp = (char) ( args ); //place first argument in register 24
 	sp--;
   
-  return sp;
+    *sp = ( char ) 0x00; //r25
+	sp--;
+    *sp = ( char ) 0x00; //r26
+	sp--;
+    *sp = ( char ) 0x00; //r27
+	sp--;
+    *sp = ( char ) 0x00; //r28
+	sp--;
+    *sp = ( char ) 0x00; //r29
+	sp--;
+    *sp = ( char ) 0x00; //r30
+	sp--;
+    *sp = ( char ) 0x00; //r31
+	sp--;
+  
+    return sp;
 }
