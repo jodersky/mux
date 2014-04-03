@@ -134,8 +134,8 @@ ISR(USART0_UDRE_vect) {
 }
 
 //called when byte is received
-ISR(USART0_RX_vect, ISR_NAKED) {
-    context_save();
+ISR(USART0_RX_vect) {
+    //context_save();
 
     struct usart_private* priv = (struct usart_private*) usart0.private_data;
     
@@ -143,6 +143,6 @@ ISR(USART0_RX_vect, ISR_NAKED) {
     rbuffer_write(&priv->rx_buffer, c);
     wake_all_queue(&priv->rx_queue);
 
-    context_restore();
-    asm volatile ("reti");
+    //context_restore();
+    //asm volatile ("reti");
 }

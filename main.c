@@ -16,39 +16,29 @@
 
 #define WAIT_CYCLES(cycles) for (volatile unsigned long i = 0; i < cycles; ++i) {}
 
-void writer() {
-
-  char* buffer = "hello world";
-  size_t length = 11;
-
+void worker() {
+  char buffer[64];
 
   while(1) {
     debug_led(1, 0);
-    WAIT_CYCLES(300000);
-    debug_led(1, 1);
-    write(&usart0, buffer, length);
-  }
-}
-
-void reader() {
-  char in;
-
-  while(1) {
     debug_led(2, 0);
-    debug_led(3, 0);
-    if (read(&usart0, &in, 1) >= 0) {
-      debug_led(2, 1);
+
+    int length = read(&usart0, buffer, 64);
+
+    if (length > 0) {
+      debug_led(1, 1);
+      char lstr = ((char) length) + '0';
+      write(&usart0, &lstr, sizeof(lstr));
     } else {
-      debug_led(3, 1);
+      debug_led(2, 1);
       WAIT_CYCLES(30000);
     }
-    
   }
 }
 
+
 DECLARE_TASK(task_idle, IDLE_STACK_SIZE, idle_entry, 0);
-DECLARE_TASK(task1, DEFAULT_STACK_SIZE, writer, 1);
-DECLARE_TASK(task2, DEFAULT_STACK_SIZE, reader, 2);
+DECLARE_TASK(task1, DEFAULT_STACK_SIZE, worker, 1);
 
 int main(int argc, char *argv[]) {
   cli();
@@ -59,7 +49,6 @@ int main(int argc, char *argv[]) {
 
   spawn_idle(&task_idle);
   spawn(&task1);
-  spawn(&task2);
 
   sei();
   clock_init(10, schedule);
