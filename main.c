@@ -27,8 +27,7 @@ void worker() {
 
     if (length > 0) {
       debug_led(1, 1);
-      char lstr = ((char) length) + '0';
-      write(&usart0, &lstr, sizeof(lstr));
+      write(&usart0, buffer, length);
     } else {
       debug_led(2, 1);
       WAIT_CYCLES(30000);
