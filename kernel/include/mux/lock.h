@@ -2,11 +2,12 @@
 #define MUX_LOCK_H
 
 #include "mux/sched.h"
+#include <avr/interrupt.h>
 
 typedef volatile char spin_lock_t;
 
-#define SPIN_LOCK_UNLOCKED 0
-#define SPIN_LOCK_LOCKED 0
+#define SPIN_LOCK_UNLOCKED (volatile char) 0
+#define SPIN_LOCK_LOCKED (volatile char) 1
 
 static inline void spin_lock(spin_lock_t* lock) {
   while(*lock != SPIN_LOCK_UNLOCKED) {yield();};

@@ -2,6 +2,7 @@
 #include "mux/list.h"
 #include "mux/rbuffer.h"
 #include "mux/sched.h"
+#include "mux/lock.h"
 #include "mcu/usart.h"
 #include "mcu/context.h"
 #include <avr/interrupt.h>
@@ -72,11 +73,13 @@ ssize_t usart_write(struct file* usart, const char* const buffer, size_t length)
         sei();
         *ucsrxb |= write_enable;
     } while (r == 0 && wrote < length);
+
     return wrote;
 }
 
 ssize_t usart_read(struct file* usart, char* const buffer, size_t length) {
     struct usart_private* priv = (struct usart_private*) usart->private_data;
+
     while (rbuffer_empty(&priv->rx_buffer)) {
         sleep_queue(&priv->rx_queue);
         yield();
@@ -104,7 +107,7 @@ struct file_operations usart_fops = {
     .close = usart_close
 };
 
-struct usart_private _usart0 = {
+static struct usart_private _usart0 = {
     .ucsrxa = &UCSR0A,
     .ubrrxh = &UBRR0H,
     .ubrrxl = &UBRR0L,
@@ -135,14 +138,10 @@ ISR(USART0_UDRE_vect) {
 
 //called when byte is received
 ISR(USART0_RX_vect) {
-    //context_save();
 
     struct usart_private* priv = (struct usart_private*) usart0.private_data;
     
     char c = UDR0;
     rbuffer_write(&priv->rx_buffer, c);
     wake_all_queue(&priv->rx_queue);
-
-    //context_restore();
-    //asm volatile ("reti");
 }
