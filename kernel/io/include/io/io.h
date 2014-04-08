@@ -9,7 +9,7 @@ struct file;
 struct file_operations;
 
 struct file {
-    struct file_operations* fops;
+    struct file_operations* const fops;
     void* private_data;
 };
 

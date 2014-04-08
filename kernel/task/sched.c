@@ -47,7 +47,9 @@ void schedule() {
   if(!list_empty(&ready)) {
     current = list_entry(ready.next, struct tcb_t, queue);
     list_move_tail(ready.next, &ready);
+    debug_led(0,1);
   } else {
     current = idle;
+    debug_led(0,0);
   }
 }

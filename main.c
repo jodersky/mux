@@ -6,6 +6,7 @@
 #include "bug/debug.h"
 #include "task/task.h"
 #include "task/sched.h"
+#include "task/idle.h"
 #include "task/lock.h"
 #include "task/idle.h"
 #include "time/clock.h"
@@ -20,17 +21,16 @@ void worker() {
   char buffer[64];
 
   while(1) {
-    debug_led(1, 0);
-    debug_led(2, 0);
-
     int length = read(&usart0, buffer, 64);
 
-    if (length > 0) {
-      debug_led(1, 1);
-      write(&usart0, buffer, length);
+    int led;
+    int value;
+    if (sscanf(buffer, "leds/%d:%d", &led, &value) == 2) {
+       debug_led(led, value);
     } else {
-      debug_led(2, 1);
-      WAIT_CYCLES(30000);
+      debug_led(0,1);
+      WAIT_CYCLES(300000);
+      debug_led(0,0);
     }
   }
 }
