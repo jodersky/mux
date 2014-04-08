@@ -1,20 +1,36 @@
 # CPU model
+#
 MCU=atmega2560
 
+
 # CPU Frequency
+#
 F_CPU=16000000L
 
-# Name of image to produce (can be arbitrary)
-TARGET=firmware
+# App
+#
+APP?=shell
+include apps/$(APP)/app.mk
+
+
+# Hardware modules
+#
+MODULES?=
+
 
 # Serial port used for uploading
+#
 SERIAL=/dev/ttyACM0
 BAUD=115200
 
-# Modules to include in kernel
-MODULES=bug collection task tshield time io
+
+# Name of image to produce (can be arbitrary)
+#
+TARGET=firmware
+
 
 # Toolchain flags
+#
 CC=avr-gcc
 CFLAGS= -std=gnu99 -O2 -Wall -finline-functions -ffunction-sections -fdata-sections -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -mmcu=$(MCU) -DF_CPU=$(F_CPU)
 LD=avr-gcc
@@ -32,23 +48,28 @@ CPPFLAGS= -O2 -Wall -fno-exceptions -ffunction-sections -fdata-sections -funsign
 GDBINITFILE=gdb.conf
 
 # Derived variables
+SOURCEDIRS=\
+	kernel \
+	kernel/io \
+	kernel/sched \
+	kernel/mcu/$(MCU) \
+	$(foreach module,$(MODULES),modules/$(module)) \
+	$(foreach module,$(MODULES),modules/$(module)/mcu/$(MCU)) \
+	apps/$(APP)
+
+INCLUDES=\
+	kernel/include \
+	kernel/mcu/$(MCU)/include \
+	$(foreach module,$(MODULES),modules/$(module)/include)
+
 SOURCES=\
-	$(foreach module,$(MODULES),$(wildcard kernel/$(module)/*.c)) \
-	$(foreach module,$(MODULES),$(wildcard kernel/$(module)/mcu/$(MCU)/*.S)) \
-	$(foreach module,$(MODULES),$(wildcard kernel/$(module)/mcu/$(MCU)/*.c)) \
-	$(wildcard arduino/*.s) $(wildcard arduino/*.c) $(wildcard arduino/*.cpp) \
-	$(wildcard *.s) $(wildcard *.c) $(wildcard *.cpp)
+	$(foreach dir,$(SOURCEDIRS),$(wildcard $(dir)/*.c)) \
+	$(foreach dir,$(SOURCEDIRS),$(wildcard $(dir)/*.S))
 	
 OBJECTS=$(addsuffix .o, $(basename $(SOURCES)))
 
-INCLUDES=\
-	$(foreach module, $(MODULES), kernel/$(module)/include) \
-	$(foreach module, $(MODULES), kernel/$(module)/mcu/$(MCU)/include)
-
 # Rules
-all: target
-
-target: $(TARGET).hex
+all: $(TARGET).hex
 
 $(TARGET).hex: $(TARGET).elf
 	$(OC) $(OCFLAGS) $< $@
@@ -92,11 +113,9 @@ cycle:
 
 clean:
 	@rm -f *.o
-	@for module in $(MODULES); do \
-		rm -f kernel/$$module/*.o; \
-		rm -f kernel/$$module/mcu/$(MCU)/*.o; \
+	@for dir in $(SOURCEDIRS); do \
+		rm -f $$dir/*.o; \
 	done
-	@rm -f arduino/*.o
 	@rm -f $(TARGET).hex
 	@rm -f $(TARGET).elf
 	@rm -f $(GDBINITFILE)
@@ -120,4 +139,4 @@ $(GDBINITFILE): $(TARGET).elf
 	@echo "Use 'avr-gdb -x $(GDBINITFILE)'"
 
 	
-.PHONY: clean cycle
+.PHONY: clean cycle target
