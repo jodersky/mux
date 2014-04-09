@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
 
   spawn_idle(&task_idle, 0);
   spawn(&tcb1, 1);
-  spawn(&tcb2, 2);
+  //spawn(&tcb2, 2);
 
   sei();
   clock_init(1000/HZ, schedule);
