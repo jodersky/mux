@@ -9,7 +9,7 @@ F_CPU=16000000L
 
 # App
 #
-APP?=shell
+APP?=template
 include apps/$(APP)/app.mk
 
 
